@@ -11,6 +11,6 @@ So I built this in an afternoon, hooking Up Bank's webhooks into SNS, which send
 - [x] don't expose my phone number or api creds
 
 ## TODO (these probably wont get done)
-- [] use async/await syntax
-- [] use typescript
-- [] add some other kinds of useful notifications
+- [ ] use async/await syntax
+- [ ] use typescript
+- [ ] add some other kinds of useful notifications
