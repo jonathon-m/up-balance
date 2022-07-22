@@ -1,0 +1,21 @@
+{
+  "name": "up-balance",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2"
+  },
+  "scripts": {
+    "deploy": "npx sls deploy"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": "latest"
+    }
+  },
+  "devDependencies": {
+    "serverless": "^3.15.2",
+    "serverless-dotenv-plugin": "^4.0.1",
+    "serverless-lift": "^1.14.0"
+  }
+}

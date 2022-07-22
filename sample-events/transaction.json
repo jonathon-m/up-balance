@@ -1,0 +1,31 @@
+{
+    "version": "0",
+    "id": "e126d342-dd4f-1e0c-dac8-3fdc2e8a5364",
+    "detail-type": "PING",
+    "source": "up",
+    "account": "171728049918",
+    "time": "2022-07-18T02:10:02Z",
+    "region": "ap-southeast-2",
+    "resources": [],
+    "detail": {
+        "data": {
+        "type": "webhook-events",
+        "id": "4279b477-f3dd-4196-9378-479d5fda4d8d",
+        "attributes": {
+            "eventType": "TRANSACTION_CREATED",
+            "createdAt": "2022-07-15T10:57:32+10:00"
+        },
+        "relationships": {
+            "transaction": {
+            "data": {
+                "type": "transactions",
+                "id": "00169870-1f14-4acf-97ab-591b227582ce"
+            },
+            "links": {
+                "related": "https://api.up.com.au/api/v1/transactions/00169870-1f14-4acf-97ab-591b227582ce"
+            }
+            }
+        }
+        }
+    }
+}

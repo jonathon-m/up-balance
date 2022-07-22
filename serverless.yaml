@@ -1,0 +1,50 @@
+service: up-balance
+
+provider:
+  name: aws
+  profile: personal
+  region: ap-southeast-2
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'sns:Publish'
+          Resource: '*'
+
+useDotenv: true
+
+plugins:
+  - serverless-lift
+  - serverless-dotenv-plugin
+
+constructs:
+  # Include Lift constructs here
+  up:
+    type: webhook
+    path: /my-up-balance
+    eventType: $request.body.data.attributes.eventType
+    authorizer:
+      handler: authorizer.main
+        
+functions:
+  upConsumer:
+    handler: handler.main
+    events:
+      - eventBridge:
+          eventBus: ${construct:up.busName}
+          pattern:
+            source:
+              - up
+            detail-type:
+              - TRANSACTION_CREATED
+
+  upDebug:
+    handler: handler.debug
+    events:
+      - eventBridge:
+          eventBus: ${construct:up.busName}
+          pattern:
+            source:
+              - up 
+            detail-type:
+              - PING

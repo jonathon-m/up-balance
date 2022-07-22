@@ -1,0 +1,31 @@
+{
+    "version": "0",
+    "id": "e126d342-dd4f-1e0c-dac8-3fdc2e8a5364",
+    "detail-type": "PING",
+    "source": "up",
+    "account": "171728049918",
+    "time": "2022-07-18T02:10:02Z",
+    "region": "ap-southeast-2",
+    "resources": [],
+    "detail": {
+        "data": {
+            "id": "18ad9871-829f-420e-beec-2121ec8cbd76",
+            "type": "webhook-events",
+            "attributes": {
+                "createdAt": "2022-07-18T12:10:01+10:00",
+                "eventType": "PING"
+            },
+            "relationships": {
+                "webhook": {
+                    "data": {
+                        "id": "ed9c21e0-9c77-4ee3-8014-ba39b1ff7991",
+                        "type": "webhooks"
+                    },
+                    "links": {
+                        "related": "https://api.up.com.au/api/v1/webhooks/ed9c21e0-9c77-4ee3-8014-ba39b1ff7991"
+                    }
+                }
+            }
+        }
+    }
+}
