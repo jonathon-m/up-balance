@@ -2,71 +2,72 @@ const fetch = require('node-fetch')
 const AWS = require('aws-sdk')
 const sns = new AWS.SNS()
 
-module.exports.main = (event, context, callback) => {
+module.exports.main = async (event) => {
+  console.log(JSON.stringify(event, null, 2))
+
   if (event.detail.data.attributes.eventType === 'TRANSACTION_CREATED') {
-    getUpResource(
+    const transactionResource = await getUpResource(
       event.detail.data.relationships.transaction.links.related,
-      (transactionResource) => {
-        if (transactionResource.data.attributes.description !== 'Round Up') {
-          getUpResource(
-            transactionResource.data.relationships.account.links.related,
-            (accountResource) => {
-              const message = `Up (${accountResource.data.attributes.displayName}): ${transactionResource.data.attributes.amount.value}\nNew balance: ${accountResource.data.attributes.balance.value}`
-              sendMessage(message, (err, data) => {
-                callback(null, {
-                  statusCode: 200,
-                })
-              })
-            },
-          )
-        } else {
-          callback(null, {
-            statusCode: 200,
-          })
-        }
-      },
     )
+
+    if (transactionResource.data.attributes.description === 'Round Up') {
+      console.log('Ignored Event: Round Up.')
+    } else {
+      const accountResource = await getUpResource(
+        transactionResource.data.relationships.account.links.related,
+      )
+      const balance = accountResource.data.attributes.balance.value
+      const diff = transactionResource.data.attributes.amount.value
+      const prevBalance = balance - diff
+
+      if (balance > 100 && balance % 100 === prevBalance % 100) {
+        console.log(
+          'Ignored Event: balance > 100 and did not cross 100 threshold.',
+        )
+      } else {
+        const message = `Up (${accountResource.data.attributes.displayName}): ${diff}\nNew balance: ${balance}`
+        await sendMessage(message)
+        console.log(message)
+      }
+    }
   } else {
-    callback(null, {
-      statusCode: 200,
-    })
+    console.log('Ignored Event:', event.detail.data.attributes.eventType)
+  }
+
+  return {
+    statusCode: 200,
   }
 }
 
-module.exports.debug = (event, context, callback) => {
+module.exports.debug = async (event) => {
   console.log(JSON.stringify(event, null, 2))
   console.log(JSON.stringify(process.env, null, 2))
-  getUpResource(
+  const resource = await getUpResource(
     event.detail.data.relationships.webhook.links.related,
-    (resource) => {
-      console.log(JSON.stringify(resource, null, 2))
-      sendMessage('Test message', (err, data) => {
-        console.log(err)
-        console.log(data)
-        callback(null, {
-          statusCode: 200,
-        })
-      })
-    },
   )
+  console.log(JSON.stringify(resource, null, 2))
+  const result = await sendMessage('Test message')
+  console.log(result)
+  return {
+    statusCode: 200,
+  }
 }
 
-const sendMessage = (message, callback) => {
+const sendMessage = async (message) => {
   const params = {
     Message: message,
-    TopicArn: process.env.SNS_TOPIC,
+    PhoneNumber: process.env.PHONE_NUMBER,
   }
-  sns.publish(params, callback)
+  return sns.publish(params).promise()
 }
 
-const getUpResource = (url, callback) => {
-  fetch(url, {
+const getUpResource = async (url) => {
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${process.env.UP_TOKEN}`,
     },
-  }).then((response) => {
-    response.json().then(callback)
   })
+  return response.json()
 }
